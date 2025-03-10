@@ -6,8 +6,8 @@
     <title>Performance EA</title>
     <style>
         body {
-            background-color: #1a1a2e; /* Sfondo nero scuro */
-            color: #d3d3d3; /* Testo grigio chiaro */
+            background-color: #000000; /* Sfondo nero puro */
+            color: #ffffff; /* Testo bianco */
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
@@ -15,109 +15,118 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            text-align: center; /* Centra il contenuto */
+            text-align: center;
         }
         .header {
             margin-bottom: 20px;
         }
         .header img {
-            max-width: 150px; /* Dimensione del logo */
+            max-width: 150px;
             margin-bottom: 10px;
         }
         .header h1 {
             font-size: 24px;
-            color: #00ff00; /* Verde per il titolo */
+            color: #a100ff; /* Viola per il titolo */
             margin: 0;
         }
         .auth {
-            background: #2a2a72; /* Blu scuro per il pannello autenticazione */
+            background: #000000; /* Tasto nero */
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             display: inline-block;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Ombra per effetto 3D */
+            border: 1px solid #a100ff; /* Bordo viola */
         }
         .auth input {
             padding: 10px;
             margin-right: 10px;
-            border: none;
+            border: 1px solid #a100ff;
             border-radius: 5px;
             width: 200px;
-            background: #d3d3d3;
-            color: #1a1a2e;
+            background: #1a1a2e;
+            color: #ffffff;
         }
         .auth button {
             padding: 10px 20px;
-            background: #ff4500; /* Cambiato in arancione per un look più vivace */
-            border: none;
+            background: #000000; /* Tasto nero */
+            border: 1px solid #a100ff; /* Bordo viola */
             border-radius: 5px;
             cursor: pointer;
-            color: #ffffff; /* Testo bianco sul pulsante */
-            transition: background 0.3s; /* Animazione per il cambio colore */
+            color: #ffffff; /* Testo bianco */
+            transition: background 0.3s;
         }
         .auth button:hover {
-            background: #e03e00; /* Colore più scuro al passaggio del mouse */
+            background: #a100ff; /* Viola al passaggio del mouse */
         }
         .dashboard {
-            background: #2a2a72;
-            padding: 30px; /* Più spazio interno */
+            background: #1a1a2e; /* Pannello leggermente più chiaro del nero puro */
+            padding: 20px;
             border-radius: 10px;
-            display: none; /* Nascondi fino all'autenticazione */
+            display: none;
             text-align: left;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+            border: 1px solid #a100ff;
         }
         .metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px; /* Più spazio tra le metriche */
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
         }
         .metric {
-            background: #1a1a2e;
+            background: #000000;
             padding: 15px;
             border-radius: 5px;
             text-align: center;
-            border: 1px solid #00ff00; /* Bordo verde */
+            border: 1px solid #a100ff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        .metric img {
+            width: 24px;
+            height: 24px;
         }
         .metric span.green {
-            color: #00ff00; /* Verde per guadagni */
+            color: #00ff00;
         }
         .metric span.red {
-            color: #ff0000; /* Rosso per perdite */
+            color: #ff0000;
         }
         canvas {
-            background: #000;
-            margin: 30px 0;
+            background: #000000;
+            margin: 20px 0;
             border-radius: 5px;
             width: 100% !important;
-            max-width: 1000px; /* Limita la larghezza del grafico */
+            max-width: 800px; /* Grafico più corto */
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            background: #1a1a2e;
+            background: #000000;
             border-radius: 5px;
             overflow: hidden;
+            border: 1px solid #a100ff;
         }
         th, td {
-            padding: 12px; /* Più spazio nelle celle */
+            padding: 10px;
             text-align: left;
-            border-bottom: 1px solid #2a2a72;
+            border-bottom: 1px solid #a100ff;
         }
         th {
-            background: #2a2a72;
+            background: #1a1a2e;
         }
         .green { color: #00ff00; }
         .red { color: #ff0000; }
         h1, h2 {
-            color: #d3d3d3;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <img src="logo.png" alt="Logo" id="logo"> <!-- Spazio per il logo -->
+            <img src="logo.png" alt="Logo" id="logo">
             <h1>Performance EA</h1>
         </div>
         <div class="auth">
@@ -202,17 +211,17 @@
             document.getElementById('maxDrawdownValue').className = 'red';
             document.getElementById('totalOrders').innerText = data.totalOrders.toLocaleString('it-IT');
 
-            // Aggiorna il grafico
+            // Aggiorna il grafico (accorciato a 15 giorni)
             if (chart) chart.destroy();
             const ctx = document.getElementById('performanceChart').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 30 }, (_, i) => (i + 1) + ' ' + new Date().toLocaleString('it-IT', { month: 'short' }).toUpperCase()),
+                    labels: Array.from({ length: 15 }, (_, i) => (i + 1) + ' ' + new Date().toLocaleString('it-IT', { month: 'short' }).toUpperCase()),
                     datasets: [{
                         label: 'Profitto (%)',
-                        data: data.chartData,
-                        borderColor: '#00ff00',
+                        data: data.chartData.slice(0, 15), // Mostra solo i primi 15 giorni
+                        borderColor: '#a100ff', // Linea viola
                         fill: false,
                         tension: 0.1
                     }]
@@ -223,16 +232,16 @@
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#d3d3d3', callback: value => value + '%' },
-                            grid: { color: '#2a2a72' }
+                            ticks: { color: '#ffffff', callback: value => value + '%' },
+                            grid: { color: '#a100ff' } // Griglia viola
                         },
                         x: {
-                            ticks: { color: '#d3d3d3' },
-                            grid: { color: '#2a2a72' }
+                            ticks: { color: '#ffffff' },
+                            grid: { color: '#a100ff' }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#d3d3d3' } }
+                        legend: { labels: { color: '#ffffff' } }
                     }
                 }
             });
