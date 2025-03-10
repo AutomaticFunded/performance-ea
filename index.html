@@ -17,12 +17,25 @@
             margin: 0 auto;
             text-align: center; /* Centra il contenuto */
         }
+        .header {
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 150px; /* Dimensione del logo */
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            font-size: 24px;
+            color: #00ff00; /* Verde per il titolo */
+            margin: 0;
+        }
         .auth {
             background: #2a2a72; /* Blu scuro per il pannello autenticazione */
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             display: inline-block;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Ombra per effetto 3D */
         }
         .auth input {
             padding: 10px;
@@ -30,33 +43,41 @@
             border: none;
             border-radius: 5px;
             width: 200px;
+            background: #d3d3d3;
+            color: #1a1a2e;
         }
         .auth button {
             padding: 10px 20px;
-            background: #00ff00; /* Verde per il pulsante */
+            background: #ff4500; /* Cambiato in arancione per un look più vivace */
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            color: #1a1a2e; /* Testo nero sul pulsante */
+            color: #ffffff; /* Testo bianco sul pulsante */
+            transition: background 0.3s; /* Animazione per il cambio colore */
+        }
+        .auth button:hover {
+            background: #e03e00; /* Colore più scuro al passaggio del mouse */
         }
         .dashboard {
             background: #2a2a72;
-            padding: 20px;
+            padding: 30px; /* Più spazio interno */
             border-radius: 10px;
             display: none; /* Nascondi fino all'autenticazione */
             text-align: left;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
         }
         .metrics {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: 20px; /* Più spazio tra le metriche */
+            margin-bottom: 30px;
         }
         .metric {
             background: #1a1a2e;
             padding: 15px;
             border-radius: 5px;
             text-align: center;
+            border: 1px solid #00ff00; /* Bordo verde */
         }
         .metric span.green {
             color: #00ff00; /* Verde per guadagni */
@@ -66,7 +87,7 @@
         }
         canvas {
             background: #000;
-            margin: 20px 0;
+            margin: 30px 0;
             border-radius: 5px;
             width: 100% !important;
             max-width: 1000px; /* Limita la larghezza del grafico */
@@ -79,7 +100,7 @@
             overflow: hidden;
         }
         th, td {
-            padding: 10px;
+            padding: 12px; /* Più spazio nelle celle */
             text-align: left;
             border-bottom: 1px solid #2a2a72;
         }
@@ -95,6 +116,10 @@
 </head>
 <body>
     <div class="container">
+        <div class="header">
+            <img src="logo.png" alt="Logo" id="logo"> <!-- Spazio per il logo -->
+            <h1>Performance EA</h1>
+        </div>
         <div class="auth">
             <input type="text" placeholder="Inserisci codice accesso" id="accessCode">
             <button onclick="loadData()">Accedi</button>
