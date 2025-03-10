@@ -6,39 +6,66 @@
     <title>Performance EA</title>
     <style>
         body {
-            background-color: #000000; /* Sfondo nero puro */
-            color: #ffffff; /* Testo bianco */
+            background-color: #1a1a2e; /* Sfondo nero scuro come ZennBot */
+            color: #d3d3d3; /* Testo grigio chiaro */
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
+            display: flex;
+            justify-content: center;
         }
         .container {
             max-width: 1200px;
-            margin: 0 auto;
-            text-align: center;
+            width: 100%;
+        }
+        .sidebar {
+            width: 60px;
+            background: #0d0d1a;
+            padding: 10px 0;
+            border-radius: 10px 0 0 10px;
+            position: fixed;
+            height: 100%;
+            left: 0;
+            top: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .sidebar a {
+            color: #a100ff; /* Viola per i link */
+            text-decoration: none;
+            margin: 10px 0;
+            font-size: 20px;
+        }
+        .sidebar a.active {
+            color: #ffffff;
+        }
+        .content {
+            margin-left: 70px;
+            width: calc(100% - 70px);
         }
         .header {
-            margin-bottom: 20px;
+            background: #2a2a72; /* Blu scuro per l'header */
+            padding: 10px;
+            border-radius: 10px 10px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
         .header img {
-            max-width: 150px;
-            margin-bottom: 10px;
-        }
-        .header h1 {
-            font-size: 24px;
-            color: #a100ff; /* Viola per il titolo */
-            margin: 0;
+            max-width: 100px;
+            margin-left: 10px;
         }
         .auth {
-            background: #000000; /* Tasto nero */
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            display: inline-block;
-            border: 1px solid #a100ff; /* Bordo viola */
+            background: #2a2a72;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px;
+            display: flex;
+            justify-content: center;
         }
         .auth input {
-            padding: 10px;
+            padding: 8px;
             margin-right: 10px;
             border: 1px solid #a100ff;
             border-radius: 5px;
@@ -47,45 +74,34 @@
             color: #ffffff;
         }
         .auth button {
-            padding: 10px 20px;
-            background: #000000; /* Tasto nero */
-            border: 1px solid #a100ff; /* Bordo viola */
+            padding: 8px 15px;
+            background: #1a1a2e;
+            border: 1px solid #a100ff;
             border-radius: 5px;
+            color: #ffffff;
             cursor: pointer;
-            color: #ffffff; /* Testo bianco */
-            transition: background 0.3s;
         }
         .auth button:hover {
-            background: #a100ff; /* Viola al passaggio del mouse */
+            background: #a100ff;
         }
         .dashboard {
-            background: #1a1a2e; /* Pannello leggermente più chiaro del nero puro */
+            background: #2a2a72;
             padding: 20px;
-            border-radius: 10px;
-            display: none;
-            text-align: left;
-            border: 1px solid #a100ff;
+            border-radius: 0 0 10px 10px;
+            margin-top: -10px;
         }
         .metrics {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
             margin-bottom: 20px;
         }
         .metric {
-            background: #000000;
-            padding: 15px;
+            background: #0d0d1a;
+            padding: 10px;
             border-radius: 5px;
             text-align: center;
             border: 1px solid #a100ff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        .metric img {
-            width: 24px;
-            height: 24px;
         }
         .metric span.green {
             color: #00ff00;
@@ -93,17 +109,22 @@
         .metric span.red {
             color: #ff0000;
         }
-        canvas {
+        .chart-container {
             background: #000000;
-            margin: 20px 0;
+            padding: 10px;
             border-radius: 5px;
+            border: 1px solid #a100ff;
+            margin-bottom: 20px;
+        }
+        canvas {
             width: 100% !important;
-            max-width: 800px; /* Grafico più corto */
+            height: 200px !important; /* Altezza fissa */
+            max-width: 1000px; /* Larghezza massima */
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            background: #000000;
+            background: #0d0d1a;
             border-radius: 5px;
             overflow: hidden;
             border: 1px solid #a100ff;
@@ -114,42 +135,50 @@
             border-bottom: 1px solid #a100ff;
         }
         th {
-            background: #1a1a2e;
+            background: #2a2a72;
         }
         .green { color: #00ff00; }
         .red { color: #ff0000; }
         h1, h2 {
             color: #ffffff;
+            margin: 0;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="sidebar">
+        <a href="#" class="active">📊</a>
+        <a href="#">💰</a>
+        <a href="#">📋</a>
+        <a href="#">👤</a>
+    </div>
+    <div class="content">
         <div class="header">
-            <img src="logo.png" alt="Logo" id="logo">
-            <h1>Performance EA</h1>
+            <img src="logo.png" alt="Logo">
+            <div class="auth">
+                <input type="text" placeholder="Inserisci codice accesso" id="accessCode">
+                <button onclick="loadData()">Accedi</button>
+            </div>
         </div>
-        <div class="auth">
-            <input type="text" placeholder="Inserisci codice accesso" id="accessCode">
-            <button onclick="loadData()">Accedi</button>
-        </div>
-        <div class="dashboard" id="dashboard">
+        <div class="dashboard">
             <h1>Dashboard Performance</h1>
             <div class="metrics">
-                <div class="metric">Risultato Ieri: <span id="yesterdayResult"></span>% (<span id="yesterdayResultValue"></span>)</div>
+                <div class="metric">Risultato Ieri: <span id="yesterdayResult" class="green"></span>% (<span id="yesterdayResultValue" class="green"></span>)</div>
                 <div class="metric">Drawdown Ieri: <span id="yesterdayDrawdown"></span>% (<span id="yesterdayDrawdownValue"></span>)</div>
                 <div class="metric">Bilancio: $<span id="balance"></span></div>
-                <div class="metric">Risultato Totale: $<span id="totalResult"></span> (<span id="totalResultPercent"></span>%)</div>
+                <div class="metric">Risultato Totale: $<span id="totalResult" class="green"></span> (<span id="totalResultPercent" class="green"></span>%)</div>
                 <div class="metric">Float: $<span id="float"></span> (<span id="orders"></span> ordini)</div>
                 <div class="metric">Profit Factor: <span id="profitFactor"></span></div>
-                <div class="metric">Win Rate: <span id="winRate"></span>%</div>
-                <div class="metric">Average Win: $<span id="averageWin"></span></div>
-                <div class="metric">Average Loss: $<span id="averageLoss"></span></div>
-                <div class="metric">Max Drawdown: <span id="maxDrawdown"></span>% ($<span id="maxDrawdownValue"></span>)</div>
+                <div class="metric">Win Rate: <span id="winRate" class="green"></span>%</div>
+                <div class="metric">Average Win: $<span id="averageWin" class="green"></span></div>
+                <div class="metric">Average Loss: $<span id="averageLoss" class="red"></span></div>
+                <div class="metric">Max Drawdown: <span id="maxDrawdown" class="red"></span>% ($<span id="maxDrawdownValue" class="red"></span>)</div>
                 <div class="metric">Total Orders: <span id="totalOrders"></span></div>
             </div>
             <h2>Ultimi 30 Giorni</h2>
-            <canvas id="performanceChart"></canvas>
+            <div class="chart-container">
+                <canvas id="performanceChart"></canvas>
+            </div>
             <h2>Trades</h2>
             <table id="tradesTable">
                 <thead>
@@ -187,61 +216,55 @@
 
             // Aggiorna i dati
             document.getElementById('yesterdayResult').innerText = data.yesterdayResult.toFixed(2);
-            document.getElementById('yesterdayResult').className = data.yesterdayResult >= 0 ? 'green' : 'red';
             document.getElementById('yesterdayResultValue').innerText = '$' + data.yesterdayResultValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-            document.getElementById('yesterdayResultValue').className = data.yesterdayResultValue >= 0 ? 'green' : 'red';
             document.getElementById('yesterdayDrawdown').innerText = data.yesterdayDrawdown.toFixed(2);
             document.getElementById('yesterdayDrawdownValue').innerText = '$' + data.yesterdayDrawdownValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
             document.getElementById('balance').innerText = data.balance.toLocaleString('it-IT', { minimumFractionDigits: 2 });
             document.getElementById('totalResult').innerText = data.totalResult.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-            document.getElementById('totalResult').className = data.totalResult >= 0 ? 'green' : 'red';
             document.getElementById('totalResultPercent').innerText = data.totalResultPercent.toFixed(2);
-            document.getElementById('totalResultPercent').className = data.totalResultPercent >= 0 ? 'green' : 'red';
             document.getElementById('float').innerText = data.float.toLocaleString('it-IT', { minimumFractionDigits: 2 });
             document.getElementById('orders').innerText = data.orders;
             document.getElementById('profitFactor').innerText = data.profitFactor.toFixed(2);
             document.getElementById('winRate').innerText = data.winRate;
             document.getElementById('averageWin').innerText = '$' + data.averageWin.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-            document.getElementById('averageWin').className = 'green';
             document.getElementById('averageLoss').innerText = '$' + data.averageLoss.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-            document.getElementById('averageLoss').className = 'red';
             document.getElementById('maxDrawdown').innerText = data.maxDrawdown.toFixed(2);
-            document.getElementById('maxDrawdown').className = 'red';
             document.getElementById('maxDrawdownValue').innerText = '$' + data.maxDrawdownValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
-            document.getElementById('maxDrawdownValue').className = 'red';
             document.getElementById('totalOrders').innerText = data.totalOrders.toLocaleString('it-IT');
 
-            // Aggiorna il grafico (accorciato a 15 giorni)
+            // Aggiorna il grafico (dimensioni fisse)
             if (chart) chart.destroy();
             const ctx = document.getElementById('performanceChart').getContext('2d');
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 15 }, (_, i) => (i + 1) + ' ' + new Date().toLocaleString('it-IT', { month: 'short' }).toUpperCase()),
+                    labels: Array.from({ length: 30 }, (_, i) => (i + 1) + ' Mar'), // 30 giorni fissi
                     datasets: [{
                         label: 'Profitto (%)',
-                        data: data.chartData.slice(0, 15), // Mostra solo i primi 15 giorni
-                        borderColor: '#a100ff', // Linea viola
+                        data: data.chartData, // Usa tutti i dati, ma il canvas ha dimensioni fisse
+                        borderColor: '#00ff00', // Verde come nell'esempio
                         fill: false,
                         tension: 0.1
                     }]
                 },
                 options: {
-                    responsive: true,
+                    responsive: false, // Dimensioni fisse
                     maintainAspectRatio: false,
+                    width: 800, // Larghezza fissa
+                    height: 200, // Altezza fissa
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#ffffff', callback: value => value + '%' },
-                            grid: { color: '#a100ff' } // Griglia viola
+                            ticks: { color: '#d3d3d3', callback: value => value + '%' },
+                            grid: { color: '#2a2a72' }
                         },
                         x: {
-                            ticks: { color: '#ffffff' },
-                            grid: { color: '#a100ff' }
+                            ticks: { color: '#d3d3d3', maxTicksLimit: 10 }, // Limita i tick per evitare sovrapposizione
+                            grid: { color: '#2a2a72' }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#ffffff' } }
+                        legend: { labels: { color: '#d3d3d3' } }
                     }
                 }
             });
