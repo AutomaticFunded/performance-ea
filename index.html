@@ -11,56 +11,33 @@
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 20px;
-            display: flex;
-            justify-content: center;
         }
         .container {
-            max-width: 1200px;
-            width: 100%;
-        }
-        .sidebar {
-            width: 60px;
-            background: #0d0d1a;
-            padding: 10px 0;
-            border-radius: 10px 0 0 10px;
-            position: fixed;
-            height: 100%;
-            left: 0;
-            top: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .sidebar a {
-            color: #a100ff; /* Viola per i link */
-            text-decoration: none;
-            margin: 10px 0;
-            font-size: 20px;
-        }
-        .sidebar a.active {
-            color: #ffffff;
-        }
-        .content {
-            margin-left: 70px;
-            width: calc(100% - 70px);
+            max-width: 100%; /* Usa tutta la larghezza della pagina */
+            margin: 0 auto;
         }
         .header {
             background: #2a2a72; /* Blu scuro per l'header */
             padding: 10px;
-            border-radius: 10px 10px 0 0;
+            border-radius: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 20px;
         }
         .header img {
             max-width: 100px;
             margin-left: 10px;
         }
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            color: #a100ff; /* Viola per il titolo */
+        }
         .auth {
             background: #2a2a72;
             padding: 10px;
             border-radius: 5px;
-            margin: 10px;
             display: flex;
             justify-content: center;
         }
@@ -85,23 +62,21 @@
             background: #a100ff;
         }
         .dashboard {
-            background: #2a2a72;
-            padding: 20px;
-            border-radius: 0 0 10px 10px;
-            margin-top: -10px;
+            display: none;
         }
         .metrics {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 10px;
             margin-bottom: 20px;
         }
         .metric {
             background: #0d0d1a;
-            padding: 10px;
+            padding: 15px;
             border-radius: 5px;
             text-align: center;
             border: 1px solid #a100ff;
+            font-size: 14px; /* Font più piccolo per proporzioni corrette */
         }
         .metric span.green {
             color: #00ff00;
@@ -115,11 +90,14 @@
             border-radius: 5px;
             border: 1px solid #a100ff;
             margin-bottom: 20px;
+            width: 100%;
+            max-width: 1000px; /* Larghezza massima fissa */
+            margin-left: auto;
+            margin-right: auto;
         }
         canvas {
-            width: 100% !important;
+            width: 1000px !important; /* Larghezza fissa */
             height: 200px !important; /* Altezza fissa */
-            max-width: 1000px; /* Larghezza massima */
         }
         table {
             width: 100%;
@@ -133,6 +111,7 @@
             padding: 10px;
             text-align: left;
             border-bottom: 1px solid #a100ff;
+            font-size: 14px; /* Font più piccolo per proporzioni corrette */
         }
         th {
             background: #2a2a72;
@@ -141,26 +120,21 @@
         .red { color: #ff0000; }
         h1, h2 {
             color: #ffffff;
-            margin: 0;
+            margin: 0 0 10px 0;
+            font-size: 18px; /* Font più piccolo per proporzioni corrette */
         }
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <a href="#" class="active">📊</a>
-        <a href="#">💰</a>
-        <a href="#">📋</a>
-        <a href="#">👤</a>
-    </div>
-    <div class="content">
+    <div class="container">
         <div class="header">
-            <img src="logo.png" alt="Logo">
+            <h1>Performance EA</h1>
             <div class="auth">
                 <input type="text" placeholder="Inserisci codice accesso" id="accessCode">
                 <button onclick="loadData()">Accedi</button>
             </div>
         </div>
-        <div class="dashboard">
+        <div class="dashboard" id="dashboard">
             <h1>Dashboard Performance</h1>
             <div class="metrics">
                 <div class="metric">Risultato Ieri: <span id="yesterdayResult" class="green"></span>% (<span id="yesterdayResultValue" class="green"></span>)</div>
@@ -223,6 +197,7 @@
             document.getElementById('totalResult').innerText = data.totalResult.toLocaleString('it-IT', { minimumFractionDigits: 2 });
             document.getElementById('totalResultPercent').innerText = data.totalResultPercent.toFixed(2);
             document.getElementById('float').innerText = data.float.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById -1.87
             document.getElementById('orders').innerText = data.orders;
             document.getElementById('profitFactor').innerText = data.profitFactor.toFixed(2);
             document.getElementById('winRate').innerText = data.winRate;
@@ -238,11 +213,11 @@
             chart = new Chart(ctx, {
                 type: 'line',
                 data: {
-                    labels: Array.from({ length: 30 }, (_, i) => (i + 1) + ' Mar'), // 30 giorni fissi
+                    labels: Array.from({ length: 30 }, (_, i) => (i + 1) + ' Mar'),
                     datasets: [{
                         label: 'Profitto (%)',
-                        data: data.chartData, // Usa tutti i dati, ma il canvas ha dimensioni fisse
-                        borderColor: '#00ff00', // Verde come nell'esempio
+                        data: data.chartData,
+                        borderColor: '#a100ff', // Viola come richiesto
                         fill: false,
                         tension: 0.1
                     }]
@@ -250,21 +225,19 @@
                 options: {
                     responsive: false, // Dimensioni fisse
                     maintainAspectRatio: false,
-                    width: 800, // Larghezza fissa
-                    height: 200, // Altezza fissa
                     scales: {
                         y: {
                             beginAtZero: true,
-                            ticks: { color: '#d3d3d3', callback: value => value + '%' },
+                            ticks: { color: '#d3d3d3', callback: value => value + '%', font: { size: 12 } },
                             grid: { color: '#2a2a72' }
                         },
                         x: {
-                            ticks: { color: '#d3d3d3', maxTicksLimit: 10 }, // Limita i tick per evitare sovrapposizione
+                            ticks: { color: '#d3d3d3', font: { size: 12 }, maxTicksLimit: 6 }, // Limita i tick per evitare sovrapposizione
                             grid: { color: '#2a2a72' }
                         }
                     },
                     plugins: {
-                        legend: { labels: { color: '#d3d3d3' } }
+                        legend: { labels: { color: '#d3d3d3', font: { size: 12 } } }
                     }
                 }
             });
