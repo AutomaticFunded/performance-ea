@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Performance EA</title>
+    <style>
+        body {
+            background-color: #1a1a2e; /* Sfondo nero scuro */
+            color: #d3d3d3; /* Testo grigio chiaro */
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            text-align: center; /* Centra il contenuto */
+        }
+        .auth {
+            background: #2a2a72; /* Blu scuro per il pannello autenticazione */
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: inline-block;
+        }
+        .auth input {
+            padding: 10px;
+            margin-right: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 200px;
+        }
+        .auth button {
+            padding: 10px 20px;
+            background: #00ff00; /* Verde per il pulsante */
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            color: #1a1a2e; /* Testo nero sul pulsante */
+        }
+        .dashboard {
+            background: #2a2a72;
+            padding: 20px;
+            border-radius: 10px;
+            display: none; /* Nascondi fino all'autenticazione */
+            text-align: left;
+        }
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        .metric {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .metric span.green {
+            color: #00ff00; /* Verde per guadagni */
+        }
+        .metric span.red {
+            color: #ff0000; /* Rosso per perdite */
+        }
+        canvas {
+            background: #000;
+            margin: 20px 0;
+            border-radius: 5px;
+            width: 100% !important;
+            max-width: 1000px; /* Limita la larghezza del grafico */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1a1a2e;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #2a2a72;
+        }
+        th {
+            background: #2a2a72;
+        }
+        .green { color: #00ff00; }
+        .red { color: #ff0000; }
+        h1, h2 {
+            color: #d3d3d3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="auth">
+            <input type="text" placeholder="Inserisci codice accesso" id="accessCode">
+            <button onclick="loadData()">Accedi</button>
+        </div>
+        <div class="dashboard" id="dashboard">
+            <h1>Dashboard Performance</h1>
+            <div class="metrics">
+                <div class="metric">Risultato Ieri: <span id="yesterdayResult"></span>% (<span id="yesterdayResultValue"></span>)</div>
+                <div class="metric">Drawdown Ieri: <span id="yesterdayDrawdown"></span>% (<span id="yesterdayDrawdownValue"></span>)</div>
+                <div class="metric">Bilancio: $<span id="balance"></span></div>
+                <div class="metric">Risultato Totale: $<span id="totalResult"></span> (<span id="totalResultPercent"></span>%)</div>
+                <div class="metric">Float: $<span id="float"></span> (<span id="orders"></span> ordini)</div>
+                <div class="metric">Profit Factor: <span id="profitFactor"></span></div>
+                <div class="metric">Win Rate: <span id="winRate"></span>%</div>
+                <div class="metric">Average Win: $<span id="averageWin"></span></div>
+                <div class="metric">Average Loss: $<span id="averageLoss"></span></div>
+                <div class="metric">Max Drawdown: <span id="maxDrawdown"></span>% ($<span id="maxDrawdownValue"></span>)</div>
+                <div class="metric">Total Orders: <span id="totalOrders"></span></div>
+            </div>
+            <h2>Ultimi 30 Giorni</h2>
+            <canvas id="performanceChart"></canvas>
+            <h2>Trades</h2>
+            <table id="tradesTable">
+                <thead>
+                    <tr>
+                        <th>Data</th>
+                        <th>Trades</th>
+                        <th>Risultato</th>
+                        <th>Percentuale</th>
+                    </tr>
+                </thead>
+                <tbody id="tradesTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Carica Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Carica i dati -->
+    <script src="data.js"></script>
+    <!-- Logica JavaScript -->
+    <script>
+        let chart;
+
+        function loadData() {
+            const code = document.getElementById('accessCode').value;
+            const data = performanceData[code];
+
+            if (!data) {
+                alert("Codice non valido!");
+                return;
+            }
+
+            // Mostra la dashboard
+            document.getElementById('dashboard').style.display = 'block';
+
+            // Aggiorna i dati
+            document.getElementById('yesterdayResult').innerText = data.yesterdayResult.toFixed(2);
+            document.getElementById('yesterdayResult').className = data.yesterdayResult >= 0 ? 'green' : 'red';
+            document.getElementById('yesterdayResultValue').innerText = '$' + data.yesterdayResultValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('yesterdayResultValue').className = data.yesterdayResultValue >= 0 ? 'green' : 'red';
+            document.getElementById('yesterdayDrawdown').innerText = data.yesterdayDrawdown.toFixed(2);
+            document.getElementById('yesterdayDrawdownValue').innerText = '$' + data.yesterdayDrawdownValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('balance').innerText = data.balance.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('totalResult').innerText = data.totalResult.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('totalResult').className = data.totalResult >= 0 ? 'green' : 'red';
+            document.getElementById('totalResultPercent').innerText = data.totalResultPercent.toFixed(2);
+            document.getElementById('totalResultPercent').className = data.totalResultPercent >= 0 ? 'green' : 'red';
+            document.getElementById('float').innerText = data.float.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('orders').innerText = data.orders;
+            document.getElementById('profitFactor').innerText = data.profitFactor.toFixed(2);
+            document.getElementById('winRate').innerText = data.winRate;
+            document.getElementById('averageWin').innerText = '$' + data.averageWin.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('averageWin').className = 'green';
+            document.getElementById('averageLoss').innerText = '$' + data.averageLoss.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('averageLoss').className = 'red';
+            document.getElementById('maxDrawdown').innerText = data.maxDrawdown.toFixed(2);
+            document.getElementById('maxDrawdown').className = 'red';
+            document.getElementById('maxDrawdownValue').innerText = '$' + data.maxDrawdownValue.toLocaleString('it-IT', { minimumFractionDigits: 2 });
+            document.getElementById('maxDrawdownValue').className = 'red';
+            document.getElementById('totalOrders').innerText = data.totalOrders.toLocaleString('it-IT');
+
+            // Aggiorna il grafico
+            if (chart) chart.destroy();
+            const ctx = document.getElementById('performanceChart').getContext('2d');
+            chart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: Array.from({ length: 30 }, (_, i) => (i + 1) + ' ' + new Date().toLocaleString('it-IT', { month: 'short' }).toUpperCase()),
+                    datasets: [{
+                        label: 'Profitto (%)',
+                        data: data.chartData,
+                        borderColor: '#00ff00',
+                        fill: false,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: { color: '#d3d3d3', callback: value => value + '%' },
+                            grid: { color: '#2a2a72' }
+                        },
+                        x: {
+                            ticks: { color: '#d3d3d3' },
+                            grid: { color: '#2a2a72' }
+                        }
+                    },
+                    plugins: {
+                        legend: { labels: { color: '#d3d3d3' } }
+                    }
+                }
+            });
+
+            // Aggiorna la tabella dei trades
+            const tableBody = document.getElementById('tradesTableBody');
+            tableBody.innerHTML = '';
+            data.trades.forEach(trade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${trade.date}</td>
+                    <td>${trade.trades.toLocaleString('it-IT')}</td>
+                    <td class="${trade.result >= 0 ? 'green' : 'red'}">$${trade.result.toLocaleString('it-IT', { minimumFractionDigits: 2 })}</td>
+                    <td class="${trade.percent >= 0 ? 'green' : 'red'}">${trade.percent.toFixed(2)}%</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+    </script>
+</body>
+</html>
